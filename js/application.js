@@ -1,75 +1,148 @@
 $(document).ready(function () {
-  $("#addToList").on('submit', function (event) {
-    event.preventDefault();
-    //disable button
+  $.ajax({
+    type: 'GET',
+    url: 'https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=113',
+    success: function (resp) {
+      resp.tasks.forEach(function (task) {
+        var id = task.id;
+        var content = task.content;
+        var completed = task.completed;
+        var buttonText = completed ? "Hell Yeah" : "Go Do It Now"
+        var buttonClass = completed ? "changeButton" : " "
 
-    // POST with the input info
-    // inside 200 ->
-    var itemInput = $(this).children('[name=thingInput]').val();
-
-    $('tbody').append("<tr>" +
-    "<td><button class='btn-sm btn completed border'>Go Do It Now</button></td>" +
-    "<td class='inputList'>" + itemInput + "</td>" +
-    "<td><button class='btn-sm btn remove border'>remove</button></td>")
-
-    this.reset();
-
-    // completed enable to button
+        $('tbody').append(`<tr data-id=${id} data-completed=${completed}>` +
+          `<td><button class='btn-sm btn completed border ${buttonClass}'>${buttonText}</button></td>` +
+          "<td class='inputList'>" + content + "</td>" +
+          "<td><button class='btn-sm btn remove border'>remove</button></td>")
+      })
+    },
+    error: function () {
+      window.alert("cannot GET data");
+    }
   });
-
-  // removal button (checked)
-  $("#itemList").on('click', '.remove', function (event) {
-    $(this).closest('tr').remove();
-  });
-
+// add Item
+  addItem();
+  // removal button
+  removeButton();
+  // toggle button
   toggleButton();
 });
 
 // complete/undone button toggle
 var toggleButton = function () {
-  $("#toggle").on('click', function (e) {
-    var $btn = $(this)
-    var id = $btn.data('id')
-    if ($btn.data('completed')) {
-      $btn.attr('disabled', true);
+  $("#itemList").on('click', '.completed', function () {
+    var $completedBTN = $(this);
+    var id = $(this).parent().parent().data("id");
+    var $deleteBTN = $(this).closest("tr").find(".remove");
+    var completedStatus = $completedBTN.parent().parent().data('completed');
 
+    $deleteBTN.attr("disabled", true);
+    $completedBTN.attr("disabled", true);
+    // console.log($completedBTN.parent().parent().data("completed"))
+    if (completedStatus) {
       $.ajax({
         method: "PUT",
-        url: `https://altcademy-to-do-list-api.herokuapp.com/tasks/${id}/mark_active?api_key=110`,
+        url: `https://altcademy-to-do-list-api.herokuapp.com/tasks/${id}/mark_active?api_key=113`,
         success: function () {
-          $btn.text('Go Do It Now');
-          $btn.removeClass('changeButton');
-          $btn.data('completed', true)
+          $completedBTN.text('Go Do It Now');
+          $completedBTN.removeClass('changeButton');
+          $completedBTN.parent().parent().data('completed', false);
         },
         error: function () {
           window.alert("Server Error, cannot save!")
         },
         complete: function () {
-          $btn.attr('disabled', false);
+          $deleteBTN.attr("disabled", false);
+          $completedBTN.attr("disabled", false);
         }
       })
     } else {
-      $btn.attr('disabled', true);
-
       $.ajax({
         method: "PUT",
-        url: `https://altcademy-to-do-list-api.herokuapp.com/tasks/${id}/mark_completed?api_key=110`,
+        url: `https://altcademy-to-do-list-api.herokuapp.com/tasks/${id}/mark_complete?api_key=113`,
         success: function () {
-          $btn.text('Hell Yeah');
-          $btn.addClass('changeButton')
-          $btn.data('copmleted', false)
+          $completedBTN.text('Hell Yeah');
+          $completedBTN.addClass('changeButton')
+          $completedBTN.parent().parent().data('completed', true)
         },
         error: function () {
           window.alert("Server Error, cannot save!")
         },
         complete: function () {
-          $btn.attr('disabled', false);
+          $deleteBTN.attr("disabled", false);
+          $completedBTN.attr("disabled", false);
         }
       })
     }
   })
 };
 
+// add item
+var addItem = function () {
+  $("#addToList").on('submit', function (event) {
+    event.preventDefault();
+
+    var form = this;
+    var $button = $(form).find("button");
+
+    $button.attr("disabled", true);
+
+    // POST with the input info
+    $.ajax({
+      type: "POST",
+      url: 'https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=113',
+      data: {
+        task: {
+          content: $('#addToList input').val()
+        }
+      },
+      success: function (resp) {
+        var id = resp.task.id;
+        var content = resp.task.content;
+        var completed = resp.task.completed;
+
+        $('tbody').append(`<tr data-id=${id} data-completed=${completed}>` +
+        "<td><button class='btn-sm btn completed border'>Go Do It Now</button></td>" +
+        "<td class='inputList'>" + content + "</td>" +
+        "<td><button class='btn-sm btn remove border'>remove</button></td>")
+      },
+      error: function () {
+        window.alert("can't successfully POST")
+      },
+      complete: function () {
+        $button.attr("disabled", false);
+        form.reset();
+      }
+    });
+  });
+}
+
+// removal button
+var removeButton = function () {
+  $("#itemList").on('click', '.remove', function (event) {
+    var $deleteBTN = $(this);
+    var id = $(this).parent().parent().data("id");
+    var $completedBTN = $(this).closest("tr").find(".completed");
+
+    $deleteBTN.attr("disabled", true);
+    $completedBTN.attr("disabled", true);
+
+    $.ajax({
+      type: "DELETE",
+      url: `https://altcademy-to-do-list-api.herokuapp.com/tasks/${id}?api_key=113`,
+      success: function () {
+        $deleteBTN.closest('tr').remove();
+      },
+      error: function () {
+        window.alert('cannot be deleted');
+      },
+      complete: function () {
+        $deleteBTN.attr("disabled", false);
+        $completedBTN.attr("disabled", false);
+      }
+    });
+  });
+}
 // We will keep our To Do List features at the bare minimum. Here is the criteria:
 //
 // Minimum requirement
