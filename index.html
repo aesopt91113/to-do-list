@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="js/application.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous">
+    </script>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <!-- heading -->
+    <div class="container-fluid">
+      <div class='row mx-auto'>
+        <h1>Your-To-Do-List</h1>
+      </div>
+      <!-- add to list  -->
+      <form id="addToList">
+        <input name="thingInput" placeholder="Things to DO" type="text" required />
+        <button class="btn btn-sm border">Add to list</button>
+      </form>
+      <table class="table table-responsive">
+        <tbody id="itemList">
+          <tr>
+            <td><button id="toggle" class='btn-sm btn completed border changeButton' data-completed=true data="1512">Hell Yeah</button></td>
+            <td class='inputList'>Demo item</td>
+            <td><button class='btn-sm btn remove border'>remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
