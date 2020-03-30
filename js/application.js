@@ -20,12 +20,14 @@ $(document).ready(function () {
       window.alert("cannot GET data");
     }
   });
-// add Item
+  // add Item
   addItem();
   // removal button
   removeButton();
   // toggle button
   toggleButton();
+
+  showToDo();
 });
 
 // complete/undone button toggle
@@ -143,12 +145,39 @@ var removeButton = function () {
     });
   });
 }
-// We will keep our To Do List features at the bare minimum. Here is the criteria:
+
+// Bonus
+// show all active tasks - completed = false
+var showToDo = function () {
+  $(".btn.showToDo").click(function () {
+    //var itemCompleted = $('#itemList.completed');
+    $("tr").each(function (element) {
+      console.log($("element").data("completed"))
+      //if (index.completed === true) {
+        //$(this).closest('tr').toggle();
+        // this.attr("disabled", false);
+        // completeButton.attr('disabled', true);
+      //}
+    })
+  });
+};
+// // show all completed tasks - completed = true
+// function showDone () {
+//   $(".btn.showCompleted").click(function () {
+//     var toDobutton = $('.btn.showActive');
+//     var itemCompleted = $('#itemList').children().children().data("completed");
+//     console.log(itemCompleted);
 //
-// Minimum requirement
-// A list of tasks rendered in the DOM based on data from the ATDAPI server.
-// Each task has a description, a remove button, and a mark complete/active button.
-// An input element and a button that lets user add a new task.
+//     if (itemCompleted === false) {
+//       $('#itemList').toggle("slow");
+//       this.attr("disabled", false);
+//       toDobutton.attr("disabled", true);
+//     }
+//   });
 //
-// Bonus feature
-// A toggle to show Active/Complete/All tasks only
+// // show all tasks
+// function showAll () {
+//   $(".btn.showAll").click(function () {
+//
+//   })
+// }
