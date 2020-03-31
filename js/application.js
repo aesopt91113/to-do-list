@@ -3,32 +3,79 @@ $(document).ready(function () {
     type: 'GET',
     url: 'https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=113',
     success: function (resp) {
-      resp.tasks.forEach(function (task) {
-        var id = task.id;
-        var content = task.content;
-        var completed = task.completed;
-        var buttonText = completed ? "Hell Yeah" : "Go Do It Now"
-        var buttonClass = completed ? "changeButton" : " "
-
-        $('tbody').append(`<tr data-id=${id} data-completed=${completed}>` +
-          `<td><button class='btn-sm btn completed border ${buttonClass}'>${buttonText}</button></td>` +
-          "<td class='inputList'>" + content + "</td>" +
-          "<td><button class='btn-sm btn remove border'>remove</button></td>")
-      })
+      var tasks = resp.tasks;
+      // getting the full list from server
+      getFullList(resp);
     },
     error: function () {
       window.alert("cannot GET data");
     }
   });
+  // bind filter
+  bindFilter();
   // add Item
   addItem();
   // removal button
   removeButton();
   // toggle button
   toggleButton();
-
-  showToDo();
 });
+
+var bindFilter = function () {
+  // showcompleted button
+  $('body').on('click', '.btn.showCompleted', function () {
+    var $tasks = $('#itemList tr')
+
+    $tasks.each(function (i, task) {
+      var $task = $(task)
+
+      if ($task.data('completed')) {
+        $task.show();
+      }
+
+      if ($task.data('completed') == false) {
+        $task.hide();
+      }
+    })
+  });
+
+  $('body').on('click', '.btn.showToDo', function () {
+    var $tasks = $('#itemList tr')
+
+    $tasks.each(function (i, task) {
+      var $task = $(task)
+
+      if ($task.data('completed')) {
+        $task.hide();
+      }
+
+      if ($task.data('completed') == false) {
+        $task.show();
+      }
+    })
+  });
+
+  $('body').on('click', '.btn.showAll', function () {
+    var $tasks = $('#itemList tr')
+    $tasks.show();
+  });
+
+  // // showToDo button
+  // $('body').on('click', '.btn.showToDo', function () {
+  //   $('tr').remove();
+  //   tasks.filter(function (tasks) {
+  //     return tasks.completed === false;
+  //   }).forEach(function (task) {
+  //     getSortList(task);
+  //   })
+  // })
+  //
+  // // showALl tasks button
+  // $('body').on('click', '.btn.showAll', function () {
+  //   $('tr').remove();
+  //   getFullList(resp);
+  // })
+}
 
 // complete/undone button toggle
 var toggleButton = function () {
@@ -146,38 +193,30 @@ var removeButton = function () {
   });
 }
 
-// Bonus
-// show all active tasks - completed = false
-var showToDo = function () {
-  $(".btn.showToDo").click(function () {
-    //var itemCompleted = $('#itemList.completed');
-    $("tr").each(function (element) {
-      console.log($("element").data("completed"))
-      //if (index.completed === true) {
-        //$(this).closest('tr').toggle();
-        // this.attr("disabled", false);
-        // completeButton.attr('disabled', true);
-      //}
-    })
+var getFullList = function(resp) {
+  resp.tasks.forEach(function (task) {
+    var id = task.id;
+    var content = task.content;
+    var completed = task.completed;
+    var buttonText = completed ? "Hell Yeah" : "Go Do It Now"
+    var buttonClass = completed ? "changeButton" : " "
+
+    $('tbody').append(`<tr data-id=${id} data-completed=${completed}>` +
+      `<td><button class='btn-sm btn completed border ${buttonClass}'>${buttonText}</button></td>` +
+      "<td class='inputList'>" + content + "</td>" +
+      "<td><button class='btn-sm btn remove border'>remove</button></td>")
   });
 };
-// // show all completed tasks - completed = true
-// function showDone () {
-//   $(".btn.showCompleted").click(function () {
-//     var toDobutton = $('.btn.showActive');
-//     var itemCompleted = $('#itemList').children().children().data("completed");
-//     console.log(itemCompleted);
-//
-//     if (itemCompleted === false) {
-//       $('#itemList').toggle("slow");
-//       this.attr("disabled", false);
-//       toDobutton.attr("disabled", true);
-//     }
-//   });
-//
-// // show all tasks
-// function showAll () {
-//   $(".btn.showAll").click(function () {
-//
-//   })
-// }
+
+var getSortList = function (task) {
+  var id = task.id;
+  var content = task.content;
+  var completed = task.completed;
+  var buttonText = completed ? "Hell Yeah" : "Go Do It Now"
+  var buttonClass = completed ? "changeButton" : " "
+
+  $('tbody').append(`<tr data-id=${id} data-completed=${completed}>` +
+    `<td><button class='btn-sm btn completed border ${buttonClass}'>${buttonText}</button></td>` +
+    "<td class='inputList'>" + content + "</td>" +
+    "<td><button class='btn-sm btn remove border'>remove</button></td>")
+}
