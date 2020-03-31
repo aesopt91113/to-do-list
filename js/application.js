@@ -21,60 +21,50 @@ $(document).ready(function () {
   toggleButton();
 });
 
+var filterMode = 'all';
+
 var bindFilter = function () {
   // showcompleted button
   $('body').on('click', '.btn.showCompleted', function () {
     var $tasks = $('#itemList tr')
+    filterMode = 'completed'
 
     $tasks.each(function (i, task) {
       var $task = $(task)
 
       if ($task.data('completed')) {
-        $task.show();
+        $task.fadeIn();
       }
 
       if ($task.data('completed') == false) {
-        $task.hide();
+        $task.fadeOut();
       }
     })
   });
 
   $('body').on('click', '.btn.showToDo', function () {
     var $tasks = $('#itemList tr')
+    filterMode = 'notCompleted';
 
     $tasks.each(function (i, task) {
       var $task = $(task)
 
       if ($task.data('completed')) {
-        $task.hide();
+        $task.fadeOut();
       }
 
       if ($task.data('completed') == false) {
-        $task.show();
+        $task.fadeIn();
       }
     })
   });
 
   $('body').on('click', '.btn.showAll', function () {
     var $tasks = $('#itemList tr')
-    $tasks.show();
-  });
+    filterMode = 'all';
 
-  // // showToDo button
-  // $('body').on('click', '.btn.showToDo', function () {
-  //   $('tr').remove();
-  //   tasks.filter(function (tasks) {
-  //     return tasks.completed === false;
-  //   }).forEach(function (task) {
-  //     getSortList(task);
-  //   })
-  // })
-  //
-  // // showALl tasks button
-  // $('body').on('click', '.btn.showAll', function () {
-  //   $('tr').remove();
-  //   getFullList(resp);
-  // })
+    $tasks.fadeIn();
+  });
 }
 
 // complete/undone button toggle
@@ -96,6 +86,11 @@ var toggleButton = function () {
           $completedBTN.text('Go Do It Now');
           $completedBTN.removeClass('changeButton');
           $completedBTN.parent().parent().data('completed', false);
+          if (filterMode === 'all' || filterMode === 'notCompleted') {
+            $completedBTN.parent().parent().fadeIn()
+          } else {
+            $completedBTN.parent().parent().fadeOut()
+          }
         },
         error: function () {
           window.alert("Server Error, cannot save!")
@@ -113,6 +108,11 @@ var toggleButton = function () {
           $completedBTN.text('Hell Yeah');
           $completedBTN.addClass('changeButton')
           $completedBTN.parent().parent().data('completed', true)
+          if (filterMode === 'all' || filterMode === 'notCompleted') {
+            $completedBTN.parent().parent().fadeOut()
+          } else {
+            $completedBTN.parent().parent().fadeIn()
+          }
         },
         error: function () {
           window.alert("Server Error, cannot save!")
@@ -149,8 +149,9 @@ var addItem = function () {
         var id = resp.task.id;
         var content = resp.task.content;
         var completed = resp.task.completed;
+        var style = filterMode === 'all' || filterMode === 'notCompleted' ? '' : 'display: none'
 
-        $('tbody').append(`<tr data-id=${id} data-completed=${completed}>` +
+        $('tbody').append(`<tr data-id=${id} data-completed=${completed} style="${style}">` +
         "<td><button class='btn-sm btn completed border'>Go Do It Now</button></td>" +
         "<td class='inputList'>" + content + "</td>" +
         "<td><button class='btn-sm btn remove border'>remove</button></td>")
@@ -180,7 +181,7 @@ var removeButton = function () {
       type: "DELETE",
       url: `https://altcademy-to-do-list-api.herokuapp.com/tasks/${id}?api_key=113`,
       success: function () {
-        $deleteBTN.closest('tr').remove();
+        $deleteBTN.closest('tr').css('background-color', 'red').fadeOut(() => { $deleteBTN.closest('tr').remove(); });
       },
       error: function () {
         window.alert('cannot be deleted');
